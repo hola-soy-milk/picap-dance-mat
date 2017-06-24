@@ -23,9 +23,51 @@ mpr121.on('data', function(data) {
   var keys = [];
   data.forEach(function(electrode, i) {
     if (electrode.isNewTouch) {
-      spawn.sync('echo -ne "\\0\\0\\4\\0\\0\\0\\0\\0" > /dev/hidg0', [], { stdio: 'inherit' });
+      switch(i) {
+        case 0:
+          keys.push(p1Left);
+          break;
+        case 1:
+          keys.push(p1Right);
+          break;
+        case 2:
+          keys.push(p1Up);
+          break;
+        case 3:
+          keys.push(p1Down);
+          break;
+        case 4:
+          keys.push(p2Left);
+          break;
+        case 5:
+          keys.push(p2Right);
+          break;
+        case 6:
+          keys.push(p2Up);
+          break;
+        case 7:
+          keys.push(p2Down);
+          break;
+        case 8:
+          keys.push(p2Up);
+          break;
+        case 9:
+          keys.push(p1Start);
+          break;
+        case 10:
+          keys.push(p1Back);
+          break;
+      }
     }
   });
+  keystroke = "\\0\\0";
+  keys.forEach(function(key) {
+    keystroke += "\\" + key;
+  });
+  while(keystroke.length != 24) {
+    keystroke += "\\0";
+  }
+  spawn.sync('echo -ne "' + keystroke + '" > /dev/hidg0', [], { stdio: 'inherit' });
 });
 
 process.on('SIGINT', function () {
