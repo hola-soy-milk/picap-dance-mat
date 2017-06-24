@@ -7,13 +7,13 @@ var p1Right = 5;
 var p1Up = 6;
 var p1Down = 7;
 
-var p7Left = 8;
-var p7Right = 9;
-var p7Up = 10;
-var p7Down = 11;
+var p2Left = 8;
+var p2Right = 9;
+var p2Up = 10;
+var p2Down = 11;
 
-var start = 12;
-var back = 13;
+var p1Start = 12;
+var p1Back = 13;
 // correct address for the Pi Cap - other boards may vary
 mpr121 = new MPR121('0x5C');
 mpr121.setTouchThreshold(40);
