@@ -1,0 +1,14 @@
+{
+  "name": "picap-dance-mat",
+  "version": "0.0.1",
+  "main": "dance-mat.js",
+  "author": "Ramon Huidobro",
+  "license": "MIT",
+  "scripts": {
+    "start": "node dance-mat.js"
+  },
+  "dependencies": {
+    "node-picap": "^1.0.0",
+    "cross-spawn": "^5.1.0"
+  }
+}
