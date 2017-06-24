@@ -64,7 +64,7 @@ mpr121.on('data', function(data) {
   keys.forEach(function(key) {
     keystroke += "\\" + key;
   });
-  while(keystroke.length != 24) {
+  while(keystroke.length != 16) {
     keystroke += "\\0";
   }
   spawn.sync('echo -ne "' + keystroke + '" > /dev/hidg0', [], { stdio: 'inherit' });
