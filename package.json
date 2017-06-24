@@ -8,7 +8,6 @@
     "start": "node dance-mat.js"
   },
   "dependencies": {
-    "node-picap": "^1.0.0",
-    "cross-spawn": "^5.1.0"
+    "node-picap": "^1.0.0"
   }
 }
