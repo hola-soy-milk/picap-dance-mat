@@ -1,4 +1,4 @@
-var spawn = require('cross-spawn');
+var spawn = require('child_process');
 var MPR121 = require('node-picap');
 var mpr121;
 
@@ -67,7 +67,7 @@ mpr121.on('data', function(data) {
   while(keystroke.length != 16) {
     keystroke += "\\0";
   }
-  spawn.sync('echo -ne "' + keystroke + '" > /dev/hidg0', [], { stdio: 'inherit' });
+  console.log(spawn.execSync('echo -ne "' + keystroke + '" > /dev/hidg0').toString());
 });
 
 process.on('SIGINT', function () {
