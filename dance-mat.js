@@ -67,6 +67,7 @@ mpr121.on('data', function(data) {
   while(keystroke.length < 16) {
     keystroke += "\\0";
   }
+  keystroke = keystroke.substring(0, 16);
   console.log(spawn.execSync('echo -ne "' + keystroke + '" > /dev/hidg0').toString());
 });
 
