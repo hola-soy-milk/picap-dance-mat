@@ -2,28 +2,29 @@ var DeviceHandle = require('linux-device');
 var MPR121 = require('node-picap');
 var mpr121;
 
-var p1Left = 4;
-var p1Right = 5;
-var p1Up = 6;
-var p1Down = 7;
+var p1Left = 0x04; // A
+var p1Right = 0x05; // B
+var p1Up = 0x06; // C
+var p1Down = 0x07; // D
 
-var p2Left = 8;
-var p2Right = 9;
-var p2Up = 10;
-var p2Down = 11;
+var p2Left = 0x08; // E
+var p2Right = 0x09; // F
+var p2Up = 0x0a; // G
+var p2Down = 0x0b; // H
 
-var p1Start = 12;
-var p1Back = 13;
+var p1Start = 0x0c; // I
+var p1Back = 0x0d; // J
 
+// Open up access to the USB interface
 var device = new DeviceHandle('/dev/hidg0', true, 16, function(err, data) {
-    if(err) return console.log("ERROR:", err);
-    console.log("received interval:", data.readUInt32LE(0).toString(16));
+  if(err) return console.log("ERROR:", err);
+  console.log("received interval:", data.readUInt32LE(0).toString(16));
 });
 
 parsePressedKeys = function(data) {
   var pressedKeys = [];
   data.forEach(function(electrode, i) {
-    if (electrode.isNewTouch) {
+    if (electrode.isTouched) {
       switch(i) {
         case 0:
           pressedKeys.push(p1Left);
@@ -65,27 +66,33 @@ parsePressedKeys = function(data) {
 }
 
 keystrokeFromPressedKeys = function(pressedKeys) {
-  keystroke = "\\0\\0";
+  keystroke = [0x00, 0x00];
   pressedKeys.forEach(function(key) {
-    keystroke += "\\" + key;
+    keystroke.push(key);
   });
-  while(keystroke.length < 16) {
-    keystroke += "\\0";
+  while(keystroke.length < 8) {
+    keystroke.push(0x00);
   }
-  return keystroke.substring(0, 16);
+  return keystroke.slice(0, 8);
 }
 
-// correct address for the Pi Cap - other boards may vary
+// Set up the picap
 mpr121 = new MPR121('0x5C');
 mpr121.setTouchThreshold(40);
 mpr121.setReleaseThreshold(20);
 
+// Process touches
 mpr121.on('data', function(data) {
   keys = parsePressedKeys(data);
   keystroke = keystrokeFromPressedKeys(keys);
-  device.write(keystroke, function(err) {
-  });
-  console.log(spawn.execSync('echo -ne "' + keystroke + '" > /dev/hidg0').toString());
+  try {
+    // Keystroke needs to be a byte array
+    var buffer = Uint8Array.from(keystroke);
+    device.write(buffer, function(err) {
+    });
+  } catch(e) {
+    console.log("ERROR: ", e);
+  }
 });
 
 process.on('SIGINT', function () {
