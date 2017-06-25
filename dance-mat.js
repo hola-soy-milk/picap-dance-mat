@@ -1,4 +1,4 @@
-var spawn = require('child_process');
+var DeviceHandle = require('linux-device');
 var MPR121 = require('node-picap');
 var mpr121;
 
@@ -14,6 +14,11 @@ var p2Down = 11;
 
 var p1Start = 12;
 var p1Back = 13;
+
+var device = new DeviceHandle('/dev/hidg0', true, 16, function(err, data) {
+    if(err) return console.log("ERROR:", err);
+    console.log("received interval:", data.readUInt32LE(0).toString(16));
+});
 
 parsePressedKeys = function(data) {
   var pressedKeys = [];
@@ -78,9 +83,12 @@ mpr121.setReleaseThreshold(20);
 mpr121.on('data', function(data) {
   keys = parsePressedKeys(data);
   keystroke = keystrokeFromPressedKeys(keys);
+  device.write(keystroke, function(err) {
+  });
   console.log(spawn.execSync('echo -ne "' + keystroke + '" > /dev/hidg0').toString());
 });
 
 process.on('SIGINT', function () {
+  device.close();
   process.exit(0);
 });
