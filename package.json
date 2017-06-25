@@ -8,6 +8,7 @@
     "start": "node dance-mat.js"
   },
   "dependencies": {
-    "node-picap": "^1.0.0"
+    "node-picap": "^1.0.0",
+    "linux-device": "~1.0.16"
   }
 }
