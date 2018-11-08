@@ -76,13 +76,19 @@ keystrokeFromPressedKeys = function(pressedKeys) {
   return keystroke.slice(0, 8);
 }
 
+var sensitivity = parseInt(process.argv[2])
+if(sensitivity == undefined) {
+  sensitivity = 100;
+}
+
 // Set up the picap
 mpr121 = new MPR121('0x5C');
-mpr121.setTouchThreshold(40);
+mpr121.setTouchThreshold(sensitivity);
 mpr121.setReleaseThreshold(20);
 
 // Process touches
 mpr121.on('data', function(data) {
+  console.log("Running with sensitivity" + sensitivity);
   keys = parsePressedKeys(data);
   keystroke = keystrokeFromPressedKeys(keys);
   try {
