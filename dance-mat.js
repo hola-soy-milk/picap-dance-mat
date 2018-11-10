@@ -1,4 +1,5 @@
 var DeviceHandle = require('linux-device');
+var exec = require('child_process').exec;
 var MPR121 = require('node-picap');
 var mpr121;
 
@@ -6,14 +7,15 @@ var p1Left = 0x04; // A
 var p1Right = 0x05; // B
 var p1Up = 0x06; // C
 var p1Down = 0x07; // D
+var p1Start = 0x0c; // I
+var p1Back = 0x0d; // J
 
 var p2Left = 0x08; // E
 var p2Right = 0x09; // F
 var p2Up = 0x0a; // G
 var p2Down = 0x0b; // H
-
-var p1Start = 0x0c; // I
-var p1Back = 0x0d; // J
+var p2Start = 0x0e; // K
+var p2Back = 0x0f; // L
 
 // Open up access to the USB interface
 var device = new DeviceHandle('/dev/hidg0', true, 16, function(err, data) {
@@ -58,6 +60,12 @@ parsePressedKeys = function(data) {
           break;
         case 10:
           pressedKeys.push(p1Back);
+          break;
+        case 11:
+          pressedKeys.push(p2Start);
+          break;
+        case 12:
+          pressedKeys.push(p2Back);
           break;
       }
     }
