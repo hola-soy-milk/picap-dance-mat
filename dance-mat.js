@@ -53,18 +53,15 @@ parsePressedKeys = function(data) {
           pressedKeys.push(p2Down);
           break;
         case 8:
-          pressedKeys.push(p2Up);
-          break;
-        case 9:
           pressedKeys.push(p1Start);
           break;
-        case 10:
+        case 9:
           pressedKeys.push(p1Back);
           break;
-        case 11:
+        case 10:
           pressedKeys.push(p2Start);
           break;
-        case 12:
+        case 11:
           pressedKeys.push(p2Back);
           break;
       }
