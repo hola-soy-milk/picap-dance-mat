@@ -1,31 +1,40 @@
-var DeviceHandle = require('linux-device');
-var exec = require('child_process').exec;
-var MPR121 = require('node-picap');
-var mpr121;
+let DeviceHandle = require('linux-device');
+let exec = require('child_process').exec;
+let MPR121 = require('node-picap');
 
-var p1Left = 0x04; // A
-var p1Right = 0x05; // B
-var p1Up = 0x06; // C
-var p1Down = 0x07; // D
-var p1Start = 0x0c; // I
-var p1Back = 0x0d; // J
+const p1Left = 0x04; // A
+const p1Right = 0x05; // B
+const p1Up = 0x06; // C
+const p1Down = 0x07; // D
+const p1Start = 0x0c; // I
+const p1Back = 0x0d; // J
 
-var p2Left = 0x08; // E
-var p2Right = 0x09; // F
-var p2Up = 0x0a; // G
-var p2Down = 0x0b; // H
-var p2Start = 0x0e; // K
-var p2Back = 0x0f; // L
+const p2Left = 0x08; // E
+const p2Right = 0x09; // F
+const p2Up = 0x0a; // G
+const p2Down = 0x0b; // H
+const p2Start = 0x0e; // K
+const p2Back = 0x0f; // L
+
+var sensitivity = parseInt(process.argv[2])
+if(sensitivity == undefined) {
+  sensitivity = 100;
+}
+
+// Set up the picap
+let mpr121 = new MPR121('0x5C');
+mpr121.setTouchThreshold(sensitivity);
+mpr121.setReleaseThreshold(20);
 
 // Open up access to the USB interface
-var device = new DeviceHandle('/dev/hidg0', true, 16, function(err, data) {
+let device = new DeviceHandle('/dev/hidg0', true, 16, (err, data) => {
   if(err) return console.log("ERROR:", err);
   console.log("received interval:", data.readUInt32LE(0).toString(16));
 });
 
-parsePressedKeys = function(data) {
+parsePressedKeys = (data) => {
   var pressedKeys = [];
-  data.forEach(function(electrode, i) {
+  data.forEach((electrode, i) => {
     if (electrode.isTouched) {
       switch(i) {
         case 0:
@@ -70,9 +79,10 @@ parsePressedKeys = function(data) {
   return pressedKeys;
 }
 
-keystrokeFromPressedKeys = function(pressedKeys) {
+keystrokeFromPressedKeys = (pressedKeys) => {
+  // TODO: Find out why we're prepending two blank keys
   keystroke = [0x00, 0x00];
-  pressedKeys.forEach(function(key) {
+  pressedKeys.forEach((key) => {
     keystroke.push(key);
   });
   while(keystroke.length < 8) {
@@ -81,32 +91,23 @@ keystrokeFromPressedKeys = function(pressedKeys) {
   return keystroke.slice(0, 8);
 }
 
-var sensitivity = parseInt(process.argv[2])
-if(sensitivity == undefined) {
-  sensitivity = 100;
-}
-
-// Set up the picap
-mpr121 = new MPR121('0x5C');
-mpr121.setTouchThreshold(sensitivity);
-mpr121.setReleaseThreshold(20);
-
 // Process touches
-mpr121.on('data', function(data) {
+mpr121.on('data', (data) => {
   console.log("Running with sensitivity" + sensitivity);
   keys = parsePressedKeys(data);
   keystroke = keystrokeFromPressedKeys(keys);
   try {
     // Keystroke needs to be a byte array
-    var buffer = Uint8Array.from(keystroke);
-    device.write(buffer, function(err) {
+    let buffer = Uint8Array.from(keystroke);
+    device.write(buffer, (err) => {
+      console.log("ERROR: ", err);
     });
   } catch(e) {
     console.log("ERROR: ", e);
   }
 });
 
-process.on('SIGINT', function () {
+process.on('SIGINT', () => {
   device.close();
   process.exit(0);
 });
