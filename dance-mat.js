@@ -16,7 +16,7 @@ const p2Down = 0x0b; // H
 const p2Start = 0x0e; // K
 const p2Back = 0x0f; // L
 
-var sensitivity = parseInt(process.argv[2])
+let sensitivity = parseInt(process.argv[2])
 if(sensitivity == undefined) {
   sensitivity = 100;
 }
@@ -33,7 +33,7 @@ let device = new DeviceHandle('/dev/hidg0', true, 16, (err, data) => {
 });
 
 parsePressedKeys = (data) => {
-  var pressedKeys = [];
+  const pressedKeys = [];
   data.forEach((electrode, i) => {
     if (electrode.isTouched) {
       switch(i) {
@@ -94,7 +94,7 @@ keystrokeFromPressedKeys = (pressedKeys) => {
 // Process touches
 mpr121.on('data', (data) => {
   console.log("Running with sensitivity" + sensitivity);
-  keys = parsePressedKeys(data);
+  const keys = parsePressedKeys(data);
   keystroke = keystrokeFromPressedKeys(keys);
   try {
     // Keystroke needs to be a byte array
