@@ -10,4 +10,4 @@ With this done, start up the program:
 
     $ node dance-mat.js
     
-The story behind this project can be found [here](https://ramonh.dev/js/hardware/usb/2019/08/23/dance-mat-js/).
+The story behind this project can be found [here](https://ramonh.dev/js/hardware/usb/2019/11/25/dance-mat-js/).
